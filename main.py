@@ -236,7 +236,8 @@ def get_ciba():
     return note_ch, note_en
 
 
-def send_message(to_user, access_token):
+def send_message(to_user, access_token, region_name, weather, temp, wind_dir, note_ch, note_en, max_temp, min_temp,
+                 sunrise, sunset, category, pm2p5, proposal):
     url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}".format(access_token)
     week_list = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
     year = localtime().tm_year
@@ -308,16 +309,16 @@ def send_message(to_user, access_token):
                 "color": '#00FF00'
             },
             "region": {
-                "value": "",
+                "value": region_name,
             },
             "weather": {
-                "value":"",
+                "value": weather,
             },
             "temp": {
-                "value": "",
+                "value": temp,
             },
             "wind_dir": {
-                "value":"",
+                "value": wind_dir,
             },
             "love_day": {
                 "value": love_days,
@@ -326,34 +327,34 @@ def send_message(to_user, access_token):
                 "value": marry_days,
             },
             "note_en": {
-                "value": "",
+                "value": note_en,
             },
             "note_ch": {
-                "value": "",
+                "value": note_ch,
             },
             "max_temp": {
-                "value": "",
+                "value": max_temp,
             },
             "min_temp": {
-                "value":"",
+                "value": min_temp,
             },
             "sunrise": {
-                "value":"",
+                "value": sunrise,
             },
             "sunset": {
-                "value": "",
+                "value": sunset,
             },
             "category": {
-                "value": "",
+                "value": category,
             },
             "pm2p5": {
-                "value":"",
+                "value": pm2p5,
             },
             "proposal": {
-                "value": "",
+                "value": proposal,
             },
             # "chp": {
-            #     "value": "",
+            #     "value": chp,
             # },
             "marry_day_left": {
                 "value":marry_day_left,
@@ -424,11 +425,17 @@ if __name__ == "__main__":
     # 接收的用户
     users = config["user"]
     # 传入地区获取天气信息
-  
-
-    
+    region = config["region"]
+    weather, temp, max_temp, min_temp, wind_dir, sunrise, sunset, category, pm2p5, proposal = get_weather(region)
+    note_ch = config["note_ch"]
+    note_en = config["note_en"]
+    if note_ch == "" and note_en == "":
+        # 获取词霸每日金句
+        note_ch, note_en = get_ciba()
+    # chp = get_tianhang()
     #birthday_left=get_birthday_left()
     # 公众号推送消息
     for user in users:
-        send_message(user, accessToken)
+        send_message(user, accessToken, region, weather, temp, wind_dir, note_ch, note_en, max_temp, min_temp, sunrise,
+                     sunset, category, pm2p5, proposal)
     os.system("pause")
